@@ -9,9 +9,16 @@ const app = express();
 
 app.use(express.json());
 
+const allowedOrigins = ['http://localhost:3000', 'http://localhost:30300'];
+
 app.use(cors({
-  origin: 'http://localhost:3000',
-  credentials: true, // Adjust this to your React app's URL
+  origin: (origin, callback) => {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  }
 }));
 
 const client = new MongoClient(process.env.MONGO_URI);
